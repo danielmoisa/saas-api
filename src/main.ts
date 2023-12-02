@@ -1,15 +1,36 @@
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { NestFactory } from '@nestjs/core';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
+  // Helmet
+  app.use(helmet());
+
+  // Port
   const configService = app.get<ConfigService>(ConfigService);
+  const port = configService.get('port');
+  const clientUrl = configService.get('clientUrl');
 
-  const port = configService.get('PORT');
+  // Cors
+  app.enableCors({
+    origin: clientUrl,
+  });
 
+  // Swagger
+  const config = new DocumentBuilder()
+    .setTitle('Backend API')
+    .setVersion('1.0')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('/swagger', app, document);
+
+  // Start server
   await app.listen(port);
 }
 bootstrap();

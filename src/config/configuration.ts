@@ -1,4 +1,5 @@
 export default () => ({
+  clientUrl: process.env.CLIENT_URL,
   port: parseInt(process.env.PORT ?? '8080', 10),
   database: {
     host: process.env.DATABASE_HOST,
