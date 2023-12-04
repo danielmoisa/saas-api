@@ -9,14 +9,14 @@ import {
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthUser } from '../auth/auth-user';
 import { UpdateUserRequest } from './dtos/update-user-request.dto';
 import { Usr } from './users.decorator';
 import { UserService } from './users.service';
 
-@ApiTags('users')
+@ApiTags('Users')
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -25,6 +25,7 @@ export class UserController {
   @Put(':id')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard())
+  @ApiOperation({ summary: 'Update a user' })
   async updateUser(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateRequest: UpdateUserRequest,

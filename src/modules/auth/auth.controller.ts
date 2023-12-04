@@ -9,13 +9,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiBody,
-  ApiResponse,
-  ApiTags,
-  ApiOperation,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags, ApiOperation } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 
@@ -38,6 +32,7 @@ export class AuthController {
 
   @Post('check-email')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Check if email is available' })
   async checkEmailAvailability(
     @Body() checkEmailRequest: CheckEmailRequest,
   ): Promise<CheckEmailResponse> {
@@ -50,31 +45,29 @@ export class AuthController {
   @Post('signup')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Register in to the application' })
-  @ApiResponse({
-    status: 200,
-    description: 'Create a new user and send verification email.',
-  })
-  @ApiBody({ type: SignupRequest })
   async signup(@Body() signupRequest: SignupRequest): Promise<void> {
     await this.authService.signup(signupRequest);
   }
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Login to the application' })
   async login(@Body() loginRequest: LoginRequest): Promise<LoginResponse> {
     return new LoginResponse(await this.authService.login(loginRequest));
   }
 
   @ApiBearerAuth()
-  @Get()
+  @Get('/me')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard())
+  @ApiOperation({ summary: 'Get user details with token' })
   async getUserWithToken(@Usr() user: AuthUser): Promise<UserResponse> {
     return UserResponse.fromUserEntity(user);
   }
 
   @Get('verify')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Verify email address with token' })
   async verifyMail(@Query('token') token: string): Promise<void> {
     await this.authService.verifyEmail(token);
   }
@@ -83,6 +76,7 @@ export class AuthController {
   @Post('change-email')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard())
+  @ApiOperation({ summary: 'Change email address' })
   async sendChangeEmailMail(
     @Usr() user: AuthUser,
     @Body() changeEmailRequest: ChangeEmailRequest,
@@ -97,12 +91,14 @@ export class AuthController {
 
   @Get('change-email')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Change email address view' })
   async changeEmail(@Query('token') token: string): Promise<void> {
     await this.authService.changeEmail(token);
   }
 
   @Post('forgot-password/:email')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Forgot password with email' })
   async sendResetPassword(@Param('email') email: string): Promise<void> {
     await this.authService.sendResetPasswordMail(email);
   }
@@ -110,6 +106,8 @@ export class AuthController {
   @Post('change-password')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard())
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Change password' })
   async changePassword(
     @Body() changePasswordRequest: ChangePasswordRequest,
     @Usr() user: AuthUser,
@@ -124,6 +122,7 @@ export class AuthController {
 
   @Post('reset-password')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Reset password' })
   async resetPassword(
     @Body() resetPasswordRequest: ResetPasswordRequest,
   ): Promise<void> {
@@ -133,6 +132,8 @@ export class AuthController {
   @Post('resend-verification')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard())
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Resend email verify' })
   async resendVerificationMail(@Usr() user: AuthUser): Promise<void> {
     await this.authService.resendVerificationMail(
       user.firstName,
