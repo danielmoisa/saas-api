@@ -6,9 +6,14 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { NestFactory } from '@nestjs/core';
 import helmet from 'helmet';
 
+import { ValidationPipe } from '@nestjs/common';
+
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.setGlobalPrefix('api/v1');
+
+  // Request Validation
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
   // Helmet
   app.use(helmet());
@@ -27,6 +32,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Backend API')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/v1/swagger', app, document);

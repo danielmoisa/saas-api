@@ -1,6 +1,6 @@
 -- CreateTable
 CREATE TABLE "users" (
-    "id" BIGSERIAL NOT NULL,
+    "id" SERIAL NOT NULL,
     "email" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -17,18 +17,18 @@ CREATE TABLE "users" (
 
 -- CreateTable
 CREATE TABLE "workspaces" (
-    "id" BIGSERIAL NOT NULL,
+    "id" SERIAL NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "name" TEXT NOT NULL,
-    "userId" BIGINT NOT NULL,
+    "userId" INTEGER NOT NULL,
 
     CONSTRAINT "workspaces_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "companies" (
-    "id" BIGSERIAL NOT NULL,
+    "id" SERIAL NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "name" TEXT NOT NULL,
@@ -38,49 +38,49 @@ CREATE TABLE "companies" (
     "linkedin" TEXT NOT NULL,
     "twitter" TEXT NOT NULL,
     "website" TEXT NOT NULL,
-    "phone" BIGINT,
+    "phone" INTEGER,
     "email" TEXT,
-    "workspaceId" BIGINT NOT NULL,
+    "workspaceId" INTEGER NOT NULL,
 
     CONSTRAINT "companies_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "persons" (
-    "id" BIGSERIAL NOT NULL,
+    "id" SERIAL NOT NULL,
     "firstName" TEXT NOT NULL,
     "lastName" TEXT NOT NULL,
     "email" TEXT NOT NULL,
-    "phone" BIGINT NOT NULL,
+    "phone" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "workspaceId" BIGINT NOT NULL,
+    "workspaceId" INTEGER NOT NULL,
 
     CONSTRAINT "persons_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "tasks" (
-    "id" BIGSERIAL NOT NULL,
+    "id" SERIAL NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "status" TEXT NOT NULL,
     "priority" TEXT NOT NULL,
-    "workspaceId" BIGINT NOT NULL,
+    "workspaceId" INTEGER NOT NULL,
 
     CONSTRAINT "tasks_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "flows" (
-    "id" BIGSERIAL NOT NULL,
+    "id" SERIAL NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "name" TEXT NOT NULL,
-    "column4" BIGINT NOT NULL,
-    "workspaceId" BIGINT NOT NULL,
+    "column4" INTEGER NOT NULL,
+    "workspaceId" INTEGER NOT NULL,
 
     CONSTRAINT "flows_pkey" PRIMARY KEY ("id")
 );
@@ -91,7 +91,7 @@ CREATE TABLE "email-changes" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "newEmail" TEXT NOT NULL,
-    "userId" BIGINT NOT NULL,
+    "userId" INTEGER NOT NULL,
     "validUntil" TIMESTAMP(6) NOT NULL DEFAULT (timezone('utc'::text, now()) + '2 days'::interval),
 
     CONSTRAINT "email-changes_pkey" PRIMARY KEY ("token")
@@ -102,7 +102,7 @@ CREATE TABLE "email-verifications" (
     "token" CHAR(21) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "userId" BIGINT NOT NULL,
+    "userId" INTEGER NOT NULL,
     "validUntil" TIMESTAMP(6) NOT NULL DEFAULT (timezone('utc'::text, now()) + '2 days'::interval),
 
     CONSTRAINT "email-verifications_pkey" PRIMARY KEY ("token")
@@ -113,7 +113,7 @@ CREATE TABLE "password-resets" (
     "token" CHAR(21) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "userId" BIGINT NOT NULL,
+    "userId" INTEGER NOT NULL,
     "validUntil" TIMESTAMP(6) NOT NULL DEFAULT (timezone('utc'::text, now()) + '2 days'::interval),
 
     CONSTRAINT "password-resets_pkey" PRIMARY KEY ("token")
