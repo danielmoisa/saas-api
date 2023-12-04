@@ -1,0 +1,166 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               BigInt    @id @default(autoincrement())
+  email            String    @unique
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  firstName        String
+  lastName         String
+  passwordHash     String
+  image            String?
+  emailVerified    Boolean   @default(false)
+  birthDate        DateTime? @db.Date
+  registrationDate DateTime  @default(dbgenerated("timezone('UTC'::text, now())")) @db.Timestamp(6)
+
+  // Relationships
+  // companies  Company[]
+  // persons    Person[]
+  emailChange       EmailChange?
+  emailVerification EmailVerification?
+  passwordReset     PasswordReset?
+  workspaces        Workspace[]
+
+  @@map("users")
+}
+
+model Workspace {
+  id        BigInt   @id @default(autoincrement()) // TODO: remove auto increment add nano id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+
+  // Relationships
+  userId    BigInt    @unique
+  user      User      @relation(fields: [userId], references: [id])
+  persons   Person[]
+  companies Company[]
+  tasks     Task[]
+  flows     Flow[]
+
+  @@map("workspaces")
+}
+
+model Company {
+  id            BigInt   @id @default(autoincrement())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  name          String
+  city          String
+  description   String?
+  employeeRange String
+  linkedin      String
+  twitter       String
+  website       String
+  phone         BigInt?
+  email         String?
+
+  // Relationships
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  workspaceId BigInt    @unique
+  // userId      BigInt? @unique
+  // persons     Person[]
+  // User        User?     @relation(fields: [userId], references: [id])
+
+  @@map("companies")
+}
+
+model Person {
+  id        BigInt   @id @default(autoincrement())
+  firstName String
+  lastName  String
+  email     String   @unique
+  phone     BigInt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  workspaceId BigInt    @unique
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  // User        User?     @relation(fields: [userId], references: [id])
+  // userId      BigInt?
+  // Company     Company?  @relation(fields: [companyId], references: [id])
+  // companyId   BigInt?
+
+  @@map("persons")
+}
+
+model Task {
+  id          BigInt   @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  name        String
+  description String
+  status      String
+  priority    String
+
+  // Relationships
+  workspaceId BigInt    @unique
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+
+  @@map("tasks")
+}
+
+model Flow {
+  id        BigInt   @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  column4   BigInt
+
+  // Relationships
+  workspaceId BigInt    @unique
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+
+  @@map("flows")
+}
+
+model EmailChange {
+  token     String   @id @db.Char(21)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  newEmail  String
+
+  // Relationships
+  userId     BigInt   @unique
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  validUntil DateTime @default(dbgenerated("(timezone('utc'::text, now()) + '2 days'::interval)")) @db.Timestamp(6)
+
+  @@map("email-changes")
+}
+
+model EmailVerification {
+  token     String   @id @db.Char(21)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  userId     BigInt   @unique
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  validUntil DateTime @default(dbgenerated("(timezone('utc'::text, now()) + '2 days'::interval)")) @db.Timestamp(6)
+
+  @@map("email-verifications")
+}
+
+model PasswordReset {
+  token     String   @id @db.Char(21)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  userId     BigInt   @unique
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  validUntil DateTime @default(dbgenerated("(timezone('utc'::text, now()) + '2 days'::interval)")) @db.Timestamp(6)
+
+  @@map("password-resets")
+}

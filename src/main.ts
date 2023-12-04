@@ -8,6 +8,7 @@ import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  app.setGlobalPrefix('api/v1');
 
   // Helmet
   app.use(helmet());
@@ -28,7 +29,7 @@ async function bootstrap() {
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('/swagger', app, document);
+  SwaggerModule.setup('api/v1/swagger', app, document);
 
   // Start server
   await app.listen(port);
