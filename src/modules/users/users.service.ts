@@ -14,15 +14,6 @@ export class UserService {
     });
   }
 
-  //   public async getUserEntityByUsername(
-  //     username: string,
-  //   ): Promise<AuthUser | null> {
-  //     const normalizedUsername = username.toLowerCase();
-  //     return this.prisma.user.findUnique({
-  //       where: { username: normalizedUsername },
-  //     });
-  //   }
-
   async updateUser(
     userId: number,
     updateRequest: UpdateUserRequest,

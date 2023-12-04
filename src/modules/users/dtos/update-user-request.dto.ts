@@ -9,12 +9,6 @@ import {
 export class UpdateUserRequest {
   @IsOptional()
   @IsNotEmpty()
-  @Matches(RegExp('^[a-zA-Z0-9\\-]+$'))
-  @MaxLength(20)
-  username?: string;
-
-  @IsOptional()
-  @IsNotEmpty()
   @Matches(RegExp('^[A-Za-zıöüçğşİÖÜÇĞŞñÑáéíóúÁÉÍÓÚ]+$'))
   @MaxLength(20)
   firstName?: string;
@@ -24,12 +18,6 @@ export class UpdateUserRequest {
   @Matches(RegExp('^[A-Za-zıöüçğşİÖÜÇĞŞñÑáéíóúÁÉÍÓÚ ]+$'))
   @MaxLength(40)
   lastName?: string;
-
-  @IsOptional()
-  @IsNotEmpty()
-  @MaxLength(40)
-  @Matches(RegExp('^[A-Za-zıöüçğşİÖÜÇĞŞñÑáéíóúÁÉÍÓÚ ]+$'))
-  middleName?: string;
 
   @IsOptional()
   @IsUrl()

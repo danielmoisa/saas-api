@@ -36,12 +36,10 @@ export class AuthService {
     try {
       await this.prisma.user.create({
         data: {
-          //   username: signupRequest.username.toLowerCase(),
           email: signupRequest.email.toLowerCase(),
           passwordHash: await argon2.hash(signupRequest.password),
           firstName: signupRequest.firstName,
           lastName: signupRequest.lastName,
-          //   middleName: signupRequest.middleName,
           emailVerification: {
             create: {
               token: emailVerificationToken,
@@ -265,12 +263,7 @@ export class AuthService {
       where: { id: payload.id },
     });
 
-    if (
-      user !== null &&
-      user.email === payload.email
-      //   &&
-      //   user.username === payload.username
-    ) {
+    if (user !== null && user.email === payload.email) {
       return user;
     }
     throw new UnauthorizedException();
@@ -280,20 +273,12 @@ export class AuthService {
     const normalizedIdentifier = loginRequest.identifier.toLowerCase();
     const user = await this.prisma.user.findFirst({
       where: {
-        OR: [
-          {
-            // username: normalizedIdentifier,
-          },
-          {
-            email: normalizedIdentifier,
-          },
-        ],
+        email: normalizedIdentifier,
       },
       select: {
         id: true,
         passwordHash: true,
         email: true,
-        // username: true,
       },
     });
 
@@ -306,19 +291,10 @@ export class AuthService {
     const payload: JwtPayload = {
       id: user.id,
       email: user.email,
-      //   username: user.username,
     };
 
     return this.jwtService.signAsync(payload);
   }
-
-  //   async isUsernameAvailable(username: string): Promise<boolean> {
-  //     const user = await this.prisma.user.findUnique({
-  //       where: { username: username.toLowerCase() },
-  //       select: { username: true },
-  //     });
-  //     return user === null;
-  //   }
 
   async isEmailAvailable(email: string): Promise<boolean> {
     const user = await this.prisma.user.findUnique({
