@@ -20,8 +20,8 @@ async function bootstrap() {
 
   // Port
   const configService = app.get<ConfigService>(ConfigService);
-  const port = configService.get('port');
-  const clientUrl = configService.get('clientUrl');
+  const port = configService.getOrThrow('port');
+  const clientUrl = configService.getOrThrow('clientUrl');
 
   // Cors
   app.enableCors({

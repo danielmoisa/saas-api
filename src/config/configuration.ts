@@ -14,18 +14,18 @@ export default () => ({
   // You can also use any other email sending services
   mail: {
     service: {
-      host: 'smtp.sendgrid.net',
-      port: 587,
+      host: process.env.MAIL_HOST,
+      port: process.env.MAIL_PORT,
       secure: false,
-      user: 'apikey',
-      pass: '__SENDGRID_API_KEY__',
+      user: process.env.MAIL_USER,
+      pass: process.env.MAIL_PASSWORD,
     },
     senderCredentials: {
-      name: '__SENDER_NAME__',
-      email: '__SENDER_EMAIL__',
+      name: process.env.MAIL_SENDER_NAME,
+      email: process.env.MAIL_SENDER_EMAIL,
     },
   },
-  // these are used in the mail templates
+  // Are used in the mail templates
   project: {
     name: '__YOUR_PROJECT_NAME__',
     address: '__YOUR_PROJECT_ADDRESS__',
@@ -37,10 +37,10 @@ export default () => ({
       ['__Social_Media_1__', '__Social_Media_1_URL__'],
       ['__Social_Media_2__', '__Social_Media_2_URL__'],
     ],
-    url: 'http://localhost:4200',
-    mailVerificationUrl: 'http://localhost:3000/auth/verify',
-    mailChangeUrl: 'http://localhost:3000/auth/change-email',
-    resetPasswordUrl: 'http://localhost:4200/reset-password',
-    termsOfServiceUrl: 'http://localhost:4200/legal/terms',
+    url: process.env.CLIENT_URL,
+    mailVerificationUrl: `${process.env.API_HOST}:${process.env.PORT}/auth/verify`,
+    mailChangeUrl: `${process.env.API_HOST}:${process.env.PORT}/auth/change-email`,
+    resetPasswordUrl: `${process.env.CLIENT_URL}/reset-password`,
+    termsOfServiceUrl: `${process.env.CLIENT_URL}/legal-terms`,
   },
 });

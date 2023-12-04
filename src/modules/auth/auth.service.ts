@@ -19,7 +19,7 @@ import { ResetPasswordRequest } from './dtos/requests/reset-password-request.dto
 import { SignupRequest } from './dtos/requests/sign-up-request.dto';
 import { PrismaService } from '../../providers/prisma/prisma.service';
 import { UserService } from '../users/users.service';
-// import { MailSenderService } from '../mail/mail.service';
+import { MailSenderService } from '../mail/mail.service';
 
 @Injectable()
 export class AuthService {
@@ -27,7 +27,7 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
-    // private readonly mailSenderService: MailSenderService,
+    private readonly mailSenderService: MailSenderService,
   ) {}
 
   async signup(signupRequest: SignupRequest): Promise<void> {
@@ -59,11 +59,11 @@ export class AuthService {
       } else throw e;
     }
 
-    // await this.mailSenderService.sendVerifyEmailMail(
-    //   signupRequest.firstName,
-    //   signupRequest.email,
-    //   emailVerificationToken,
-    // );
+    await this.mailSenderService.sendVerifyEmailMail(
+      signupRequest.firstName,
+      signupRequest.email,
+      emailVerificationToken,
+    );
   }
 
   async resendVerificationMail(
@@ -153,7 +153,7 @@ export class AuthService {
       createEmailChange,
     ]);
 
-    // await this.mailSenderService.sendChangeEmailMail(name, oldEmail, token);
+    await this.mailSenderService.sendChangeEmailMail(name, oldEmail, token);
   }
 
   async changeEmail(token: string): Promise<void> {
@@ -257,7 +257,7 @@ export class AuthService {
     });
 
     // no need to wait for information email
-    // this.mailSenderService.sendPasswordChangeInfoMail(name, email);
+    this.mailSenderService.sendPasswordChangeInfoMail(name, email);
   }
 
   async validateUser(payload: JwtPayload): Promise<AuthUser> {

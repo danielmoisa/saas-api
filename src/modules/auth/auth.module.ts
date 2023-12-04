@@ -7,6 +7,7 @@ import { JwtStrategy } from './jwt/jwt.strategy';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { UserService } from '../users/users.service';
+import { MailSenderService } from '../mail/mail.service';
 
 @Module({
   imports: [
@@ -14,15 +15,21 @@ import { UserService } from '../users/users.service';
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('jwt.secretOrKey'),
+        secret: configService.getOrThrow<string>('jwt.secretOrKey'),
         signOptions: {
-          expiresIn: configService.get<number>('jwt.expiresIn'),
+          expiresIn: configService.getOrThrow<number>('jwt.expiresIn'),
         },
       }),
       inject: [ConfigService], // Inject ConfigService
     }),
   ],
-  providers: [AuthService, JwtStrategy, PrismaService, UserService],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    PrismaService,
+    UserService,
+    MailSenderService,
+  ],
   controllers: [AuthController],
 })
 export class AuthModule {}
