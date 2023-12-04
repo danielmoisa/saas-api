@@ -6,6 +6,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { NestFactory } from '@nestjs/core';
 import helmet from 'helmet';
 import metadata from './metadata';
+import * as requestIp from 'request-ip';
 
 import { ValidationPipe } from '@nestjs/common';
 
@@ -16,8 +17,10 @@ async function bootstrap() {
   // Request Validation
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
-  // Helmet
+  // Security
   app.use(helmet());
+
+  app.use(requestIp.mw());
 
   // Port
   const configService = app.get<ConfigService>(ConfigService);
