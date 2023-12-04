@@ -40,6 +40,8 @@ export class AuthService {
           passwordHash: await argon2.hash(signupRequest.password),
           firstName: signupRequest.firstName,
           lastName: signupRequest.lastName,
+          birthDate: signupRequest.birthDate,
+          image: signupRequest.image,
           emailVerification: {
             create: {
               token: emailVerificationToken,
@@ -51,7 +53,7 @@ export class AuthService {
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         if (e.code === 'P2002') {
-          // unique constraint
+          // Unique constraint
           throw new ConflictException();
         } else throw e;
       } else throw e;
@@ -90,7 +92,7 @@ export class AuthService {
       createEmailVerification,
     ]);
 
-    // await this.mailSenderService.sendVerifyEmailMail(name, email, token);
+    await this.mailSenderService.sendVerifyEmailMail(name, email, token);
   }
 
   async verifyEmail(token: string): Promise<void> {
@@ -208,11 +210,11 @@ export class AuthService {
       createPasswordReset,
     ]);
 
-    // await this.mailSenderService.sendResetPasswordMail(
-    //   user.firstName,
-    //   user.email,
-    //   token,
-    // );
+    await this.mailSenderService.sendResetPasswordMail(
+      user.firstName,
+      user.email,
+      token,
+    );
   }
 
   async resetPassword(
@@ -255,7 +257,7 @@ export class AuthService {
     });
 
     // no need to wait for information email
-    this.mailSenderService.sendPasswordChangeInfoMail(name, email);
+    await this.mailSenderService.sendPasswordChangeInfoMail(name, email);
   }
 
   async validateUser(payload: JwtPayload): Promise<AuthUser> {

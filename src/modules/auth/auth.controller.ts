@@ -9,7 +9,13 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiResponse,
+  ApiTags,
+  ApiOperation,
+} from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 
@@ -25,21 +31,10 @@ import { LoginResponse } from './dtos/responses/login-response.dto';
 import { UserResponse } from '../users/dtos/user-response.dto';
 import { Usr } from '../users/users.decorator';
 
-@ApiTags('auth')
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-
-  //   @Post('check-username')
-  //   @HttpCode(HttpStatus.OK)
-  //   async checkUsernameAvailability(
-  //     @Body() checkUsernameRequest: CheckUsernameRequest,
-  //   ): Promise<CheckUsernameResponse> {
-  //     const isAvailable = await this.authService.isUsernameAvailable(
-  //       checkUsernameRequest.username,
-  //     );
-  //     return new CheckUsernameResponse(isAvailable);
-  //   }
 
   @Post('check-email')
   @HttpCode(HttpStatus.OK)
@@ -54,6 +49,12 @@ export class AuthController {
 
   @Post('signup')
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Register in to the application' })
+  @ApiResponse({
+    status: 200,
+    description: 'Create a new user and send verification email.',
+  })
+  @ApiBody({ type: SignupRequest })
   async signup(@Body() signupRequest: SignupRequest): Promise<void> {
     await this.authService.signup(signupRequest);
   }
