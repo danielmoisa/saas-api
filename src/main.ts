@@ -4,7 +4,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { NestFactory } from '@nestjs/core';
 import helmet from 'helmet';
 import * as requestIp from 'request-ip';
-import * as cookieParser from 'cookie-parser';
+import cookieParser from 'cookie-parser';
 
 import { ValidationPipe } from '@nestjs/common';
 
