@@ -1,48 +1,31 @@
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { NestFactory } from '@nestjs/core';
 import helmet from 'helmet';
-import metadata from './metadata';
 import * as requestIp from 'request-ip';
+import * as cookieParser from 'cookie-parser';
 
 import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  app.setGlobalPrefix('api/v1');
+
+  app.use(cookieParser());
 
   // Request Validation
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
   // Security
-  app.use(helmet());
+  app.use(
+    helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }),
+  );
 
   app.use(requestIp.mw());
 
   // Port
   const configService = app.get<ConfigService>(ConfigService);
   const port = configService.getOrThrow('port');
-  const clientUrl = configService.getOrThrow('clientUrl');
-
-  // Cors
-  app.enableCors({
-    origin: clientUrl,
-    credentials: true,
-  });
-
-  // Swagger
-  const config = new DocumentBuilder()
-    .setTitle('Backend API')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
-
-  await SwaggerModule.loadPluginMetadata(metadata);
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/v1/swagger', app, document);
 
   // Start server
   await app.listen(port);

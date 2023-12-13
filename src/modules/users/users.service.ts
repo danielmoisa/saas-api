@@ -1,40 +1,37 @@
-import { ConflictException, Injectable, Logger } from '@nestjs/common';
-import { AuthUser } from '../auth/auth-user';
+import { Injectable } from '@nestjs/common';
+import { CreateUserInput } from './dto/create-user.input';
+import { UpdateUserInput } from './dto/update-user.input';
 import { PrismaService } from '../../providers/prisma/prisma.service';
-import { UpdateUserRequest } from './dtos/update-user-request.dto';
-import { UserResponse } from './dtos/user-response.dto';
-
+import * as argon2 from 'argon2';
 @Injectable()
-export class UserService {
-  constructor(private readonly prisma: PrismaService) {}
+export class UsersService {
+  constructor(private readonly prismaService: PrismaService) {}
 
-  public async getUserEntityById(id: number): Promise<AuthUser | null> {
-    return this.prisma.user.findUnique({
-      where: { id },
+  async create(createUserInput: CreateUserInput) {
+    const passwordHash = await argon2.hash(createUserInput?.password);
+    return await this.prismaService.user.create({
+      data: {
+        firstName: createUserInput.firstName,
+        lastName: createUserInput.lastName,
+        email: createUserInput.email,
+        passwordHash: passwordHash,
+      },
     });
   }
 
-  async updateUser(
-    userId: number,
-    updateRequest: UpdateUserRequest,
-  ): Promise<UserResponse> {
-    try {
-      const updatedUser = await this.prisma.user.update({
-        where: { id: userId },
-        data: {
-          ...updateRequest,
-          birthDate:
-            updateRequest.birthDate !== null &&
-            updateRequest.birthDate !== undefined
-              ? new Date(updateRequest.birthDate)
-              : updateRequest.birthDate,
-        },
-      });
+  findAll() {
+    return this.prismaService.user.findMany();
+  }
 
-      return UserResponse.fromUserEntity(updatedUser);
-    } catch (err) {
-      Logger.error(JSON.stringify(err));
-      throw new ConflictException();
-    }
+  findOne(id: number) {
+    return `This action returns a #${id} user`;
+  }
+
+  update(id: number, updateUserInput: UpdateUserInput) {
+    return `This action updates a #${id} user`;
+  }
+
+  remove(id: number) {
+    return `This action removes a #${id} user`;
   }
 }

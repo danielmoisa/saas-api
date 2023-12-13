@@ -1,38 +1,45 @@
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { Module } from '@nestjs/common';
 import configuration from './config/configuration';
 import { AuthModule } from './modules/auth/auth.module';
 import { MailSenderModule } from './modules/mail/mail.module';
-import { UserModule } from './modules/users/users.module';
-import { APP_GUARD } from '@nestjs/core';
-import { ThrottlerBehindProxyGuard } from './modules/auth/guards/throttler-behind-proxy';
-import { ThrottlerModule } from '@nestjs/throttler';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { UsersModule } from './modules/users/users.module';
+import { AuthService } from './modules/auth/auth.service';
+import { join } from 'path/posix';
 
 @Module({
   imports: [
-    ThrottlerModule.forRoot([
-      {
-        ttl: 60,
-        limit: 50,
-      },
-    ]),
     ConfigModule.forRoot({
       isGlobal: true,
       load: [configuration],
     }),
-    UserModule,
+    // PrismaModule.forRoot({
+    //   isGlobal: true
+    // }),
     AuthModule,
     MailSenderModule,
+    UsersModule,
+    GraphQLModule.forRootAsync<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      imports: [AuthModule],
+      inject: [AuthService],
+      useFactory: (authService: AuthService) => ({
+        playground: true,
+        autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+        cors: {
+          origin: '*',
+          credentials: true,
+        },
+        context: async ({ req }: { req: Request }) => {
+          // Later we'll load user to the context based on jwt cookie
+          // const user = await authenticateUserByRequest(authService, req)
+          // return { req, user }
+        },
+      }),
+    }),
   ],
-  controllers: [AppController],
-  providers: [
-    AppService,
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerBehindProxyGuard,
-    },
-  ],
+  providers: [],
 })
 export class AppModule {}

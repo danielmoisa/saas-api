@@ -1,13 +1,10 @@
 import { Module } from '@nestjs/common';
-import { PassportModule } from '@nestjs/passport';
-import { UserService } from './users.service';
+import { UsersService } from './users.service';
+import { UsersResolver } from './users.resolver';
 import { PrismaService } from '../../providers/prisma/prisma.service';
-import { UserController } from './users.controller';
 
 @Module({
-  imports: [PassportModule.register({ defaultStrategy: 'jwt' })],
-  providers: [UserService, PrismaService],
-  exports: [UserService],
-  controllers: [UserController],
+  providers: [UsersResolver, UsersService, PrismaService],
+  exports: [UsersService],
 })
-export class UserModule {}
+export class UsersModule {}
