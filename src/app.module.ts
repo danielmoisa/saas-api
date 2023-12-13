@@ -8,6 +8,9 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { UsersModule } from './modules/users/users.module';
 import { AuthService } from './modules/auth/auth.service';
 import { join } from 'path/posix';
+import { authenticateUserByRequest } from './modules/auth/auth.middleware';
+import { Request } from 'express';
+import { UsersService } from './modules/users/users.service';
 
 @Module({
   imports: [
@@ -18,12 +21,9 @@ import { join } from 'path/posix';
     // PrismaModule.forRoot({
     //   isGlobal: true
     // }),
-    AuthModule,
-    MailSenderModule,
-    UsersModule,
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
-      imports: [AuthModule],
+      imports: [AuthModule, UsersModule],
       inject: [AuthService],
       useFactory: (authService: AuthService) => ({
         playground: true,
@@ -33,9 +33,8 @@ import { join } from 'path/posix';
           credentials: true,
         },
         context: async ({ req }: { req: Request }) => {
-          // Later we'll load user to the context based on jwt cookie
-          // const user = await authenticateUserByRequest(authService, req)
-          // return { req, user }
+          const user = await authenticateUserByRequest(authService, req);
+          return { req, user };
         },
       }),
     }),

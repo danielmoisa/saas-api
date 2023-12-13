@@ -4,7 +4,7 @@
 
 type Auth {
   """Example field (placeholder)"""
-  exampleField: Int!
+  token: String
 }
 
 type User {
@@ -21,29 +21,17 @@ type User {
 }
 
 type Query {
-  auth(id: Int!): Auth!
+  me: User!
   users: [User!]!
   user(id: Int!): User!
 }
 
 type Mutation {
-  createAuth(createAuthInput: CreateAuthInput!): Auth!
-  updateAuth(updateAuthInput: UpdateAuthInput!): Auth!
-  removeAuth(id: Int!): Auth!
+  signinLocal(email: String!, password: String!): Auth!
+  signOut: User!
   createUser(createUserInput: CreateUserInput!): User!
   updateUser(updateUserInput: UpdateUserInput!): User!
   removeUser(id: Int!): User!
-}
-
-input CreateAuthInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
-}
-
-input UpdateAuthInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
 }
 
 input CreateUserInput {
