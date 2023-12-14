@@ -9,6 +9,7 @@ import { AuthService } from './modules/auth/auth.service';
 import { join } from 'path/posix';
 import { authenticateUserByRequest } from './modules/auth/auth.middleware';
 import { Request } from 'express';
+import { WorkspacesModule } from './modules/workspaces/workspaces.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { Request } from 'express';
         },
       }),
     }),
+    WorkspacesModule,
   ],
   providers: [],
 })

@@ -156,13 +156,7 @@ CREATE UNIQUE INDEX "Password_userId_key" ON "Password"("userId");
 CREATE UNIQUE INDEX "UserImage_userId_key" ON "UserImage"("userId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Workspace_userId_key" ON "Workspace"("userId");
-
--- CreateIndex
 CREATE UNIQUE INDEX "Person_email_key" ON "Person"("email");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Flow_workspaceId_key" ON "Flow"("workspaceId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "EmailChange_userId_key" ON "EmailChange"("userId");

@@ -5,7 +5,7 @@ import { User } from '../users/entities/user.entity';
 import { SigninInput } from './dto/signin.input';
 import { Request } from 'express';
 import { UseGuards } from '@nestjs/common';
-import { AuthGuard } from './auth.guard';
+import { LocalAuthGuard } from './local-auth.guard';
 
 @Resolver(() => Auth)
 export class AuthResolver {
@@ -32,7 +32,7 @@ export class AuthResolver {
     return user;
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(LocalAuthGuard)
   @Query(() => User)
   async me(@Context('user') user: User): Promise<User> {
     return user;

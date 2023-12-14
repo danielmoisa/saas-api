@@ -20,10 +20,25 @@ type User {
   email: String!
 }
 
+type Workspace {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  userId: String!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
 type Query {
   me: User!
   users: [User!]!
   user(id: String!): User!
+  workspaces: [Workspace!]!
+  workspace(id: Int!): Workspace!
 }
 
 type Mutation {
@@ -32,6 +47,9 @@ type Mutation {
   createUser(createUserInput: CreateUserInput!): User!
   updateUser(updateUserInput: UpdateUserInput!): User!
   removeUser(id: String!): User!
+  createWorkspace(createWorkspaceInput: CreateWorkspaceInput!): Workspace!
+  updateWorkspace(updateWorkspaceInput: UpdateWorkspaceInput!): Workspace!
+  removeWorkspace(id: Int!): Workspace!
 }
 
 input CreateUserInput {
@@ -47,4 +65,12 @@ input UpdateUserInput {
   firstName: String
   lastName: String
   id: String!
+}
+
+input CreateWorkspaceInput {
+  name: String!
+}
+
+input UpdateWorkspaceInput {
+  name: String
 }

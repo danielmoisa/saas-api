@@ -57,6 +57,10 @@ async function seed() {
       workspaces: {
         create: [
           {
+            id: '1123d345345r34tv4vt54asd',
+            name: 'Test',
+          },
+          {
             id: '1123d345345r34tv4vt54',
             name: 'Progression.io',
             tasks: {

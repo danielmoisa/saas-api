@@ -59,7 +59,7 @@ model Workspace {
   name      String
 
   // Relationships
-  userId String @unique
+  userId String
   user   User   @relation(fields: [userId], references: [id])
   tasks  Task[]
   flows  Flow[]
@@ -121,7 +121,7 @@ model Flow {
   column4   Int
 
   // Relationships
-  workspaceId String    @unique
+  workspaceId String
   workspace   Workspace @relation(fields: [workspaceId], references: [id])
 }
 
