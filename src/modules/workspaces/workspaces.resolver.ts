@@ -30,22 +30,30 @@ export class WorkspacesResolver {
   }
 
   @Query(() => Workspace, { name: 'workspace' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
-    return this.workspacesService.findOne(id);
+  findOne(
+    @Me() currentUser: User,
+    @Args('id', { type: () => Int }) id: string,
+  ) {
+    return this.workspacesService.findOne(currentUser, id);
   }
 
   @Mutation(() => Workspace)
   updateWorkspace(
+    @Me() currentUser: User,
     @Args('updateWorkspaceInput') updateWorkspaceInput: UpdateWorkspaceInput,
   ) {
     return this.workspacesService.update(
+      currentUser,
       updateWorkspaceInput.id,
       updateWorkspaceInput,
     );
   }
 
   @Mutation(() => Workspace)
-  removeWorkspace(@Args('id', { type: () => Int }) id: number) {
-    return this.workspacesService.remove(id);
+  removeWorkspace(
+    @Me() currentUser: User,
+    @Args('id', { type: () => Int }) id: string,
+  ) {
+    return this.workspacesService.remove(currentUser, id);
   }
 }

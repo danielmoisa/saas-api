@@ -42,7 +42,7 @@ type Query {
 }
 
 type Mutation {
-  signinLocal(email: String!, password: String!): Auth!
+  signinLocal(signinInput: SigninInput!): Auth!
   signOut: User!
   createUser(createUserInput: CreateUserInput!): User!
   updateUser(updateUserInput: UpdateUserInput!): User!
@@ -50,6 +50,11 @@ type Mutation {
   createWorkspace(createWorkspaceInput: CreateWorkspaceInput!): Workspace!
   updateWorkspace(updateWorkspaceInput: UpdateWorkspaceInput!): Workspace!
   removeWorkspace(id: Int!): Workspace!
+}
+
+input SigninInput {
+  email: String!
+  password: String!
 }
 
 input CreateUserInput {
@@ -73,4 +78,5 @@ input CreateWorkspaceInput {
 
 input UpdateWorkspaceInput {
   name: String
+  id: String!
 }

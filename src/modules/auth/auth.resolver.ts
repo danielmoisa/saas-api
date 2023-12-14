@@ -13,11 +13,9 @@ export class AuthResolver {
 
   @Mutation(() => Auth)
   async signinLocal(
-    @Args({ name: 'email', type: () => String }) email: string,
-    @Args({ name: 'password', type: () => String }) password: string,
+    @Args('signinInput') signinInput: SigninInput,
     @Context('req') req: Request,
   ) {
-    const signinInput = { email, password };
     const { token } = await this.authService.signinLocal(signinInput);
     req.res?.cookie('jwt', token, { httpOnly: true });
     return { token };

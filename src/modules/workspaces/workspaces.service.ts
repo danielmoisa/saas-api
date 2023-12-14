@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateWorkspaceInput } from './dto/create-workspace.input';
 import { UpdateWorkspaceInput } from './dto/update-workspace.input';
 import { PrismaService } from '../../providers/prisma/prisma.service';
@@ -18,23 +18,64 @@ export class WorkspacesService {
   }
 
   async findAll(currentUser: User) {
-    const workspace = await this.prisma.workspace.findMany({
+    const workspaces = await this.prisma.workspace.findMany({
       where: {
         userId: currentUser.id,
       },
     });
-    return workspace;
+    return workspaces;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} workspace`;
+  async findOne(currentUser: User, id: string) {
+    // Check if the workspace exists and belongs to the current user
+    const existingWorkspace = await this.prisma.workspace.findUnique({
+      where: { id },
+    });
+
+    if (!existingWorkspace || existingWorkspace.userId !== currentUser.id) {
+      // If the workspace is not found or doesn't belong to the current user, throw NotFoundException
+      throw new NotFoundException('Workspace not found');
+    }
+
+    return existingWorkspace;
   }
 
-  update(id: number, updateWorkspaceInput: UpdateWorkspaceInput) {
-    return `This action updates a #${id} workspace`;
+  async update(
+    currentUser: User,
+    id: string,
+    updateWorkspaceInput: UpdateWorkspaceInput,
+  ) {
+    // Check if the workspace exists and belongs to the current user
+    const existingWorkspace = await this.prisma.workspace.findUnique({
+      where: { id },
+    });
+
+    if (!existingWorkspace || existingWorkspace.userId !== currentUser.id) {
+      // If the workspace is not found or doesn't belong to the current user, throw NotFoundException
+      throw new NotFoundException('Workspace not found');
+    }
+
+    // Update the workspace using Prisma
+    return this.prisma.workspace.update({
+      where: { id },
+      data: updateWorkspaceInput,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} workspace`;
+  async remove(currentUser: User, id: string) {
+    // Check if the workspace exists and belongs to the current user
+    const existingWorkspace = await this.prisma.workspace.findUnique({
+      where: { id },
+    });
+
+    if (!existingWorkspace || existingWorkspace.userId !== currentUser.id) {
+      // If the workspace is not found or doesn't belong to the current user, throw NotFoundException
+      throw new NotFoundException('Workspace not found');
+    }
+
+    // Remove the workspace using Prisma
+    return this.prisma.workspace.delete({
+      where: { id },
+    });
   }
 }
