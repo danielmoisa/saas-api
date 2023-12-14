@@ -3,7 +3,7 @@ import { User } from '@prisma/client';
 import { SigninInput } from './dto/signin.input';
 import { PrismaService } from '../../providers/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 @Injectable()
 export class AuthService {
   constructor(
