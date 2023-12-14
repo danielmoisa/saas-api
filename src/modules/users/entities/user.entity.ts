@@ -3,7 +3,7 @@ import { ObjectType, Field, ID } from '@nestjs/graphql';
 @ObjectType()
 export class User {
   @Field(() => ID)
-  id: number;
+  id: string;
 
   @Field(() => String, { description: 'Example field (placeholder)' })
   firstName: string;

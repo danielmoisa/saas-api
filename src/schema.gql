@@ -23,7 +23,7 @@ type User {
 type Query {
   me: User!
   users: [User!]!
-  user(id: Int!): User!
+  user(id: String!): User!
 }
 
 type Mutation {
@@ -31,7 +31,7 @@ type Mutation {
   signOut: User!
   createUser(createUserInput: CreateUserInput!): User!
   updateUser(updateUserInput: UpdateUserInput!): User!
-  removeUser(id: Int!): User!
+  removeUser(id: String!): User!
 }
 
 input CreateUserInput {
@@ -46,5 +46,5 @@ input UpdateUserInput {
   password: String
   firstName: String
   lastName: String
-  id: Int!
+  id: String!
 }

@@ -14,11 +14,12 @@ export class AuthService {
   async signinLocal(signinInput: SigninInput): Promise<{ token: string }> {
     const user = await this.prisma.user.findUnique({
       where: { email: signinInput?.email },
+      include: { password: true },
     });
-    if (user) {
+    if (user && user.password) {
       const passwordMatch = await bcrypt.compare(
         signinInput.password,
-        user.passwordHash,
+        user?.password?.hash,
       );
       if (passwordMatch) {
         const token = this.jwtService.sign(
@@ -36,9 +37,9 @@ export class AuthService {
       const data = this.jwtService.decode(token, { json: true }) as {
         sub: unknown;
       };
-      if (data?.sub && !isNaN(Number(data.sub))) {
+      if (data?.sub && typeof data?.sub) {
         const user = await this.prisma.user.findUnique({
-          where: { id: Number(data.sub) },
+          where: { id: String(data.sub) },
         });
         return user || null;
       }

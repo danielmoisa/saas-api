@@ -15,7 +15,11 @@ export class UsersService {
         firstName: createUserInput.firstName,
         lastName: createUserInput.lastName,
         email: createUserInput.email,
-        passwordHash: passwordHash,
+        password: {
+          create: {
+            hash: passwordHash,
+          },
+        },
       },
     });
   }
@@ -24,15 +28,15 @@ export class UsersService {
     return this.prismaService.user.findMany();
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return `This action returns a #${id} user`;
   }
 
-  update(id: number, updateUserInput: UpdateUserInput) {
+  update(id: string, updateUserInput: UpdateUserInput) {
     return `This action updates a #${id} user`;
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return `This action removes a #${id} user`;
   }
 }
