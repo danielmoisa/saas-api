@@ -10,6 +10,8 @@ import { join } from 'path/posix';
 import { authenticateUserByRequest } from './modules/auth/auth.middleware';
 import { Request } from 'express';
 import { WorkspacesModule } from './modules/workspaces/workspaces.module';
+import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
+import { PrismaModule } from './providers/prisma/prisma.module';
 
 @Module({
   imports: [
@@ -17,15 +19,13 @@ import { WorkspacesModule } from './modules/workspaces/workspaces.module';
       isGlobal: true,
       load: [configuration],
     }),
-    // PrismaModule.forRoot({
-    //   isGlobal: true
-    // }),
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
-      imports: [AuthModule, UsersModule],
+      imports: [AuthModule],
       inject: [AuthService],
       useFactory: (authService: AuthService) => ({
-        playground: true,
+        playground: false,
+        plugins: [ApolloServerPluginLandingPageLocalDefault()],
         autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
         cors: {
           origin: '*',
@@ -37,7 +37,9 @@ import { WorkspacesModule } from './modules/workspaces/workspaces.module';
         },
       }),
     }),
+    PrismaModule,
     WorkspacesModule,
+    UsersModule,
   ],
   providers: [],
 })

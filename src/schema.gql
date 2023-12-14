@@ -35,26 +35,35 @@ scalar DateTime
 
 type Query {
   me: User!
-  users: [User!]!
-  user(id: String!): User!
   workspaces: [Workspace!]!
   workspace(id: Int!): Workspace!
+  users: [User!]!
+  user(id: String!): User!
 }
 
 type Mutation {
   signinLocal(signinInput: SigninInput!): Auth!
   signOut: User!
-  createUser(createUserInput: CreateUserInput!): User!
-  updateUser(updateUserInput: UpdateUserInput!): User!
-  removeUser(id: String!): User!
   createWorkspace(createWorkspaceInput: CreateWorkspaceInput!): Workspace!
   updateWorkspace(updateWorkspaceInput: UpdateWorkspaceInput!): Workspace!
   removeWorkspace(id: Int!): Workspace!
+  createUser(createUserInput: CreateUserInput!): User!
+  updateUser(updateUserInput: UpdateUserInput!): User!
+  removeUser(id: String!): User!
 }
 
 input SigninInput {
   email: String!
   password: String!
+}
+
+input CreateWorkspaceInput {
+  name: String!
+}
+
+input UpdateWorkspaceInput {
+  name: String
+  id: String!
 }
 
 input CreateUserInput {
@@ -69,14 +78,5 @@ input UpdateUserInput {
   password: String
   firstName: String
   lastName: String
-  id: String!
-}
-
-input CreateWorkspaceInput {
-  name: String!
-}
-
-input UpdateWorkspaceInput {
-  name: String
   id: String!
 }
