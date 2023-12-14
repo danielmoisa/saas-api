@@ -17,7 +17,7 @@ export class WorkspacesResolver {
   async createWorkspace(
     @Me() currentUser: User,
     @Args('createWorkspaceInput') createWorkspaceInput: CreateWorkspaceInput,
-  ) {
+  ): Promise<Workspace> {
     return await this.workspacesService.create(
       currentUser,
       createWorkspaceInput,
@@ -25,24 +25,24 @@ export class WorkspacesResolver {
   }
 
   @Query(() => [Workspace], { name: 'workspaces' })
-  async findAll(@Me() currentUser: User) {
+  async findAll(@Me() currentUser: User): Promise<Workspace[]> {
     return await this.workspacesService.findAll(currentUser);
   }
 
   @Query(() => Workspace, { name: 'workspace' })
-  findOne(
+  async findOne(
     @Me() currentUser: User,
     @Args('id', { type: () => Int }) id: string,
-  ) {
-    return this.workspacesService.findOne(currentUser, id);
+  ): Promise<Workspace | null> {
+    return await this.workspacesService.findOne(currentUser, id);
   }
 
   @Mutation(() => Workspace)
-  updateWorkspace(
+  async updateWorkspace(
     @Me() currentUser: User,
     @Args('updateWorkspaceInput') updateWorkspaceInput: UpdateWorkspaceInput,
-  ) {
-    return this.workspacesService.update(
+  ): Promise<Workspace> {
+    return await this.workspacesService.update(
       currentUser,
       updateWorkspaceInput.id,
       updateWorkspaceInput,
@@ -50,10 +50,10 @@ export class WorkspacesResolver {
   }
 
   @Mutation(() => Workspace)
-  removeWorkspace(
+  async removeWorkspace(
     @Me() currentUser: User,
     @Args('id', { type: () => Int }) id: string,
-  ) {
-    return this.workspacesService.remove(currentUser, id);
+  ): Promise<Workspace> {
+    return await this.workspacesService.remove(currentUser, id);
   }
 }

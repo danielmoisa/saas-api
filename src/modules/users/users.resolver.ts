@@ -5,6 +5,7 @@ import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { UseGuards } from '@nestjs/common';
 import { LocalAuthGuard } from '../auth/local-auth.guard';
+import { Me } from '../auth/me.decorator';
 
 @UseGuards(LocalAuthGuard)
 @Resolver(() => User)
@@ -12,27 +13,41 @@ export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
   @Mutation(() => User)
-  createUser(@Args('createUserInput') createUserInput: CreateUserInput) {
-    return this.usersService.create(createUserInput);
+  async createUser(
+    @Args('createUserInput') createUserInput: CreateUserInput,
+  ): Promise<User> {
+    return await this.usersService.create(createUserInput);
   }
 
   @Query(() => [User], { name: 'users' })
-  findAll() {
-    return this.usersService.findAll();
+  async findAll(): Promise<User[]> {
+    return await this.usersService.findAll();
   }
 
   @Query(() => User, { name: 'user' })
-  findOne(@Args('id', { type: () => String }) id: string) {
-    return this.usersService.findOne(id);
+  async findOne(
+    @Args('id', { type: () => String }) id: string,
+  ): Promise<User | null> {
+    return await this.usersService.findOne(id);
   }
 
   @Mutation(() => User)
-  updateUser(@Args('updateUserInput') updateUserInput: UpdateUserInput) {
-    return this.usersService.update(updateUserInput.id, updateUserInput);
+  async updateUser(
+    @Me() currentUser: User,
+    @Args('updateUserInput') updateUserInput: UpdateUserInput,
+  ): Promise<User> {
+    return await this.usersService.update(
+      currentUser,
+      updateUserInput.id,
+      updateUserInput,
+    );
   }
 
   @Mutation(() => User)
-  removeUser(@Args('id', { type: () => String }) id: string) {
-    return this.usersService.remove(id);
+  async removeUser(
+    @Me() currentUser: User,
+    @Args('id', { type: () => String }) id: string,
+  ): Promise<User> {
+    return await this.usersService.remove(currentUser, id);
   }
 }

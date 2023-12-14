@@ -3,12 +3,16 @@ import { CreateWorkspaceInput } from './dto/create-workspace.input';
 import { UpdateWorkspaceInput } from './dto/update-workspace.input';
 import { PrismaService } from '../../providers/prisma/prisma.service';
 import { User } from '../users/entities/user.entity';
+import { Workspace } from './entities/workspace.entity';
 
 @Injectable()
 export class WorkspacesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(currentUser: User, createWorkspaceInput: CreateWorkspaceInput) {
+  async create(
+    currentUser: User,
+    createWorkspaceInput: CreateWorkspaceInput,
+  ): Promise<Workspace> {
     return await this.prisma.workspace.create({
       data: {
         ...createWorkspaceInput,
@@ -17,7 +21,7 @@ export class WorkspacesService {
     });
   }
 
-  async findAll(currentUser: User) {
+  async findAll(currentUser: User): Promise<Workspace[]> {
     const workspaces = await this.prisma.workspace.findMany({
       where: {
         userId: currentUser.id,
@@ -26,7 +30,7 @@ export class WorkspacesService {
     return workspaces;
   }
 
-  async findOne(currentUser: User, id: string) {
+  async findOne(currentUser: User, id: string): Promise<Workspace> {
     // Check if the workspace exists and belongs to the current user
     const existingWorkspace = await this.prisma.workspace.findUnique({
       where: { id },
@@ -44,7 +48,7 @@ export class WorkspacesService {
     currentUser: User,
     id: string,
     updateWorkspaceInput: UpdateWorkspaceInput,
-  ) {
+  ): Promise<Workspace> {
     // Check if the workspace exists and belongs to the current user
     const existingWorkspace = await this.prisma.workspace.findUnique({
       where: { id },
@@ -62,7 +66,7 @@ export class WorkspacesService {
     });
   }
 
-  async remove(currentUser: User, id: string) {
+  async remove(currentUser: User, id: string): Promise<Workspace> {
     // Check if the workspace exists and belongs to the current user
     const existingWorkspace = await this.prisma.workspace.findUnique({
       where: { id },

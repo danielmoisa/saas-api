@@ -71,6 +71,7 @@ input CreateUserInput {
   password: String!
   firstName: String!
   lastName: String!
+  birthDate: String!
 }
 
 input UpdateUserInput {
@@ -78,5 +79,6 @@ input UpdateUserInput {
   password: String
   firstName: String
   lastName: String
+  birthDate: String
   id: String!
 }

@@ -19,4 +19,8 @@ export class CreateUserInput {
   @Field()
   @MaxLength(255)
   lastName: string;
+
+  @Field()
+  @MaxLength(255)
+  birthDate: string;
 }

@@ -15,7 +15,7 @@ export class AuthResolver {
   async signinLocal(
     @Args('signinInput') signinInput: SigninInput,
     @Context('req') req: Request,
-  ) {
+  ): Promise<{ token: string }> {
     const { token } = await this.authService.signinLocal(signinInput);
     req.res?.cookie('jwt', token, { httpOnly: true });
     return { token };
