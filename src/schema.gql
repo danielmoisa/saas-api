@@ -33,12 +33,46 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type Task {
+  id: ID!
+  title: String!
+  content: String!
+  status: TaskStatus!
+  priority: TaskPriority!
+  label: TaskLabel!
+}
+
+enum TaskStatus {
+  TODO
+  DONE
+  INPROGRESS
+  BACKLOG
+  CANCELED
+  BLOCKED
+  ONHOLD
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum TaskLabel {
+  BUG
+  FEATURE
+  DOCUMENTATION
+}
+
 type Query {
   me: User!
   workspaces: [Workspace!]!
   workspace(id: Int!): Workspace!
   users: [User!]!
   user(id: String!): User!
+  tasks(workspaceId: String!): [Task!]!
+  task(taskId: Int!): Task!
 }
 
 type Mutation {
@@ -50,6 +84,9 @@ type Mutation {
   createUser(createUserInput: CreateUserInput!): User!
   updateUser(updateUserInput: UpdateUserInput!): User!
   removeUser(id: String!): User!
+  createTask(createTaskInput: CreateTaskInput!): Task!
+  updateTask(updateTaskInput: UpdateTaskInput!): Task!
+  removeTask(taskId: Int!): Task!
 }
 
 input SigninInput {
@@ -81,4 +118,23 @@ input UpdateUserInput {
   lastName: String
   birthDate: String
   id: String!
+}
+
+input CreateTaskInput {
+  title: String!
+  content: String!
+  status: TaskStatus!
+  priority: TaskPriority!
+  label: TaskLabel!
+  workspaceId: ID!
+}
+
+input UpdateTaskInput {
+  title: String
+  content: String
+  status: TaskStatus
+  priority: TaskPriority
+  label: TaskLabel
+  workspaceId: ID
+  id: ID!
 }

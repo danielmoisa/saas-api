@@ -12,6 +12,7 @@ import { Request } from 'express';
 import { WorkspacesModule } from './modules/workspaces/workspaces.module';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { PrismaModule } from './providers/prisma/prisma.module';
+import { TasksModule } from './modules/tasks/tasks.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { PrismaModule } from './providers/prisma/prisma.module';
     PrismaModule,
     WorkspacesModule,
     UsersModule,
+    TasksModule,
   ],
   providers: [],
 })
