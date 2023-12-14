@@ -1,3 +1,12 @@
+-- CreateEnum
+CREATE TYPE "TaskStatus" AS ENUM ('TODO', 'DONE', 'INPROGRESS', 'BACKLOG', 'CANCELED', 'BLOCKED', 'ONHOLD');
+
+-- CreateEnum
+CREATE TYPE "TaskPriority" AS ENUM ('LOW', 'MEDIUM', 'HIGH', 'CRITICAL');
+
+-- CreateEnum
+CREATE TYPE "TaskLabel" AS ENUM ('BUG', 'FEATURE', 'DOCUMENTATION');
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
@@ -81,10 +90,11 @@ CREATE TABLE "Task" (
     "id" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "name" TEXT NOT NULL,
-    "description" TEXT NOT NULL,
-    "status" TEXT NOT NULL,
-    "priority" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "content" TEXT,
+    "status" "TaskStatus" NOT NULL,
+    "priority" "TaskPriority" NOT NULL,
+    "label" "TaskLabel" NOT NULL,
     "workspaceId" TEXT NOT NULL,
 
     CONSTRAINT "Task_pkey" PRIMARY KEY ("id")
@@ -150,9 +160,6 @@ CREATE UNIQUE INDEX "Workspace_userId_key" ON "Workspace"("userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Person_email_key" ON "Person"("email");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Task_workspaceId_key" ON "Task"("workspaceId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Flow_workspaceId_key" ON "Flow"("workspaceId");

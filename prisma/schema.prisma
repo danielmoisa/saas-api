@@ -99,16 +99,17 @@ model Person {
 }
 
 model Task {
-  id          String   @id @default(cuid())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  name        String
-  description String
-  status      String
-  priority    String
+  id        String       @id @default(cuid())
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  title     String
+  content   String?
+  status    TaskStatus
+  priority  TaskPriority
+  label     TaskLabel
 
   // Relationships
-  workspaceId String    @unique
+  workspaceId String
   workspace   Workspace @relation(fields: [workspaceId], references: [id])
 }
 
@@ -156,4 +157,27 @@ model PasswordReset {
   userId     String   @unique
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   validUntil DateTime @default(dbgenerated("(timezone('utc'::text, now()) + '2 days'::interval)")) @db.Timestamp(6)
+}
+
+enum TaskStatus {
+  TODO
+  DONE
+  INPROGRESS
+  BACKLOG
+  CANCELED
+  BLOCKED
+  ONHOLD
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum TaskLabel {
+  BUG
+  FEATURE
+  DOCUMENTATION
 }
