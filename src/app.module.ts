@@ -29,7 +29,7 @@ import { TasksModule } from './modules/tasks/tasks.module';
         plugins: [ApolloServerPluginLandingPageLocalDefault()],
         autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
         cors: {
-          origin: '*',
+          origin: process.env.CLIENT_URL,
           credentials: true,
         },
         context: async ({ req }: { req: Request }) => {
