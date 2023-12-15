@@ -7,19 +7,30 @@ import * as requestIp from 'request-ip';
 import cookieParser from 'cookie-parser';
 
 import { ValidationPipe } from '@nestjs/common';
+import { CorsConfig, NestConfig } from './config/configuration.interface';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  app.enableCors({
-    allowedHeaders: '*',
-    origin: process.env.CLIENT_URL,
-  });
+  // Configs
+  const configService = app.get<ConfigService>(ConfigService);
+  const nestConfig = configService.get<NestConfig>('nest');
+  const corsConfig = configService.get<CorsConfig>('cors');
+
+  if (corsConfig?.enabled) {
+    app.enableCors({
+      origin: corsConfig.allowedOrigin,
+      credentials: true,
+    });
+  }
 
   app.use(cookieParser());
 
   // Request Validation
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+
+  // Enable shutdown hook
+  app.enableShutdownHooks();
 
   // Security
   app.use(
@@ -28,11 +39,7 @@ async function bootstrap() {
 
   app.use(requestIp.mw());
 
-  // Port
-  const configService = app.get<ConfigService>(ConfigService);
-  const port = configService.getOrThrow('port');
-
   // Start server
-  await app.listen(port);
+  await app.listen(process.env.PORT || nestConfig?.port || 8080);
 }
 bootstrap();

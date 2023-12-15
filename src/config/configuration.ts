@@ -1,7 +1,23 @@
 export default () => ({
+  nest: {
+    port: 3000,
+  },
+  cors: {
+    enabled: true,
+    allowedOrigin: process.env.CLIENT_URL,
+  },
+  graphql: {
+    playgroundEnabled: true,
+    debug: true,
+    schemaDestination: './src/schema.graphql',
+    sortSchema: true,
+  },
+  security: {
+    expiresIn: '2m',
+    refreshIn: '7d',
+    bcryptSaltOrRound: 10,
+  },
   clientUrl: process.env.CLIENT_URL,
-  port: parseInt(process.env.PORT ?? '8080', 10),
-  apiHost: process.env.API_HOST,
   database: {
     host: process.env.DATABASE_HOST,
     port: parseInt(process.env.DATABASE_PORT ?? '5432', 10),
