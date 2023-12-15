@@ -11,7 +11,9 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async signinLocal(signinInput: SigninInput): Promise<{ token: string }> {
+  async signinLocal(
+    signinInput: SigninInput,
+  ): Promise<{ token: string; user: User }> {
     const user = await this.prisma.user.findUnique({
       where: { email: signinInput?.email },
       include: { password: true },
@@ -26,7 +28,7 @@ export class AuthService {
           { sub: user.id },
           { expiresIn: '30 days' },
         );
-        return { token };
+        return { token, user };
       }
     }
     throw new Error('Email or password is incorrect');
