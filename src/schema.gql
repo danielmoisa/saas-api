@@ -2,23 +2,45 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type Token {
+  """JWT access token"""
+  accessToken: JWT!
+
+  """JWT refresh token"""
+  refreshToken: JWT!
+}
+
+"""
+A field whose value is a JSON Web Token (JWT): https://jwt.io/introduction.
+"""
+scalar JWT
+
+type Auth {
+  """JWT access token"""
+  accessToken: JWT!
+
+  """JWT refresh token"""
+  refreshToken: JWT!
+  user: User!
+}
+
 type User {
   id: ID!
 
-  """Example field (placeholder)"""
-  firstName: String!
+  """Identifies the date and time when the object was created."""
+  createdAt: DateTime!
 
-  """Example field (placeholder)"""
-  lastName: String!
-
-  """Example field (placeholder)"""
+  """Identifies the date and time when the object was last updated."""
+  updatedAt: DateTime!
   email: String!
+  firstName: String
+  lastName: String
 }
 
-type Auth {
-  token: String
-  user: User!
-}
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
 
 type Workspace {
   id: ID!
@@ -27,11 +49,6 @@ type Workspace {
   name: String!
   userId: String!
 }
-
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
 
 type Task {
   id: ID!
@@ -66,27 +83,32 @@ enum TaskLabel {
 }
 
 type Query {
-  me: User!
   workspaces: [Workspace!]!
   workspace(id: Int!): Workspace!
-  users: [User!]!
-  user(id: String!): User!
+  me: User!
   tasks(workspaceId: String!): [Task!]!
   task(taskId: Int!): Task!
 }
 
 type Mutation {
-  signinLocal(signinInput: SigninInput!): Auth!
-  signOut: User!
+  signup(signupInput: SignupInput!): Auth!
+  signin(signinInput: SigninInput!): Auth!
+  refreshToken(token: JWT!): Token!
   createWorkspace(createWorkspaceInput: CreateWorkspaceInput!): Workspace!
   updateWorkspace(updateWorkspaceInput: UpdateWorkspaceInput!): Workspace!
   removeWorkspace(id: Int!): Workspace!
-  createUser(createUserInput: CreateUserInput!): User!
-  updateUser(updateUserInput: UpdateUserInput!): User!
-  removeUser(id: String!): User!
+  updateUser(data: UpdateUserInput!): User!
+  changePassword(data: ChangePasswordInput!): User!
   createTask(createTaskInput: CreateTaskInput!): Task!
   updateTask(updateTaskInput: UpdateTaskInput!): Task!
   removeTask(taskId: Int!): Task!
+}
+
+input SignupInput {
+  email: String!
+  password: String!
+  firstName: String!
+  lastName: String!
 }
 
 input SigninInput {
@@ -103,21 +125,14 @@ input UpdateWorkspaceInput {
   id: String!
 }
 
-input CreateUserInput {
-  email: String!
-  password: String!
-  firstName: String!
-  lastName: String!
-  birthDate: String!
-}
-
 input UpdateUserInput {
-  email: String
-  password: String
   firstName: String
   lastName: String
-  birthDate: String
-  id: String!
+}
+
+input ChangePasswordInput {
+  oldPassword: String!
+  newPassword: String!
 }
 
 input CreateTaskInput {

@@ -1,48 +1,35 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateUserInput } from './dto/create-user.input';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { UpdateUserInput } from './dto/update-user.input';
 import { PrismaService } from '../../providers/prisma/prisma.service';
-import bcrypt from 'bcryptjs';
 import { User } from './entities/user.entity';
+import { ChangePasswordInput } from './dto/change-password.input';
+import { PasswordService } from '../../providers/password/password.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly passwordService: PasswordService,
+  ) {}
 
-  async create(createUserInput: CreateUserInput): Promise<User> {
-    const passwordHash = await bcrypt.hash(createUserInput?.password, 10);
-    return await this.prismaService.user.create({
-      data: {
-        firstName: createUserInput.firstName,
-        lastName: createUserInput.lastName,
-        email: createUserInput.email,
-        password: {
-          create: {
-            hash: passwordHash,
-          },
-        },
-      },
-    });
-  }
-
-  async findAll(): Promise<User[]> {
+  async findAll() {
     return await this.prismaService.user.findMany();
   }
 
-  async findOne(id: string): Promise<User | null> {
+  async findOne(id: string) {
     return await this.prismaService.user.findUnique({
       where: { id },
     });
   }
 
-  async update(
-    currentUser: User,
-    id: string,
-    updateUserInput: UpdateUserInput,
-  ): Promise<User> {
+  async updateUser(currentUser: User, updateUserInput: UpdateUserInput) {
     // Check if the user exists and belongs to the current user
     const existingUser = await this.prismaService.user.findUnique({
-      where: { id },
+      where: { id: currentUser.id },
     });
 
     if (!existingUser || existingUser.id !== currentUser.id) {
@@ -52,18 +39,43 @@ export class UsersService {
 
     // Update the user using Prisma
     const updatedUser = await this.prismaService.user.update({
-      where: { id },
+      where: { id: currentUser.id },
       data: {
         firstName: updateUserInput.firstName,
         lastName: updateUserInput.lastName,
-        birthDate: updateUserInput.birthDate,
       },
     });
 
     return updatedUser;
   }
 
-  async remove(currentUser: User, id: string): Promise<User> {
+  async changePassword(
+    userId: string,
+    userPassword: string,
+    changePassword: ChangePasswordInput,
+  ) {
+    const passwordValid = await this.passwordService.validatePassword(
+      changePassword.oldPassword,
+      userPassword,
+    );
+
+    if (!passwordValid) {
+      throw new BadRequestException('Invalid password');
+    }
+
+    const hashedPassword = await this.passwordService.hashPassword(
+      changePassword.newPassword,
+    );
+
+    return this.prismaService.user.update({
+      data: {
+        password: { update: { hash: hashedPassword } },
+      },
+      where: { id: userId },
+    });
+  }
+
+  async remove(currentUser: User, id: string) {
     // Check if the user exists and belongs to the current user
     const existingUser = await this.prismaService.user.findUnique({
       where: { id },

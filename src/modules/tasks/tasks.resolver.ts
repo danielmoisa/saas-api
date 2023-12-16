@@ -4,11 +4,12 @@ import { Task } from './entities/task.entity';
 import { CreateTaskInput } from './dto/create-task.input';
 import { UpdateTaskInput } from './dto/update-task.input';
 import { UseGuards } from '@nestjs/common';
-import { LocalAuthGuard } from '../auth/local-auth.guard';
-import { Me } from '../auth/me.decorator';
-import { User } from '../users/entities/user.entity';
 
-@UseGuards(LocalAuthGuard)
+import { User } from '../users/entities/user.entity';
+import { GqlAuthGuard } from '../auth/gql-auth.guard';
+import { Me } from '../../common/decorators/me.decorator';
+
+@UseGuards(GqlAuthGuard)
 @Resolver(() => Task)
 export class TasksResolver {
   constructor(private readonly tasksService: TasksService) {}

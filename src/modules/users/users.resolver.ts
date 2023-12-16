@@ -1,53 +1,57 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
-import { UsersService } from './users.service';
-import { User } from './entities/user.entity';
-import { CreateUserInput } from './dto/create-user.input';
-import { UpdateUserInput } from './dto/update-user.input';
+import {
+  Resolver,
+  Query,
+  Parent,
+  Mutation,
+  Args,
+  ResolveField,
+} from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
-import { LocalAuthGuard } from '../auth/local-auth.guard';
-import { Me } from '../auth/me.decorator';
+import { GqlAuthGuard } from '../auth/gql-auth.guard';
+import { UsersService } from './users.service';
+import { ChangePasswordInput } from './dto/change-password.input';
+import { UpdateUserInput } from './dto/update-user.input';
+import { User } from './entities/user.entity';
+import { PrismaService } from '../../providers/prisma/prisma.service';
+import { Me } from '../../common/decorators/me.decorator';
 
-@UseGuards(LocalAuthGuard)
 @Resolver(() => User)
+@UseGuards(GqlAuthGuard)
 export class UsersResolver {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+    private prisma: PrismaService,
+  ) {}
 
-  @Mutation(() => User)
-  async createUser(
-    @Args('createUserInput') createUserInput: CreateUserInput,
-  ): Promise<User> {
-    return await this.usersService.create(createUserInput);
+  @Query(() => User)
+  async me(@Me() user: User): Promise<User> {
+    return user;
   }
 
-  @Query(() => [User], { name: 'users' })
-  async findAll(): Promise<User[]> {
-    return await this.usersService.findAll();
-  }
-
-  @Query(() => User, { name: 'user' })
-  async findOne(
-    @Args('id', { type: () => String }) id: string,
-  ): Promise<User | null> {
-    return await this.usersService.findOne(id);
-  }
-
+  @UseGuards(GqlAuthGuard)
   @Mutation(() => User)
   async updateUser(
-    @Me() currentUser: User,
-    @Args('updateUserInput') updateUserInput: UpdateUserInput,
-  ): Promise<User> {
-    return await this.usersService.update(
-      currentUser,
-      updateUserInput.id,
-      updateUserInput,
+    @Me() user: User,
+    @Args('data') newUserData: UpdateUserInput,
+  ) {
+    return this.usersService.updateUser(user, newUserData);
+  }
+
+  @UseGuards(GqlAuthGuard)
+  @Mutation(() => User)
+  async changePassword(
+    @Me() user: User,
+    @Args('data') changePassword: ChangePasswordInput,
+  ) {
+    return this.usersService.changePassword(
+      user.id,
+      user.password,
+      changePassword,
     );
   }
 
-  @Mutation(() => User)
-  async removeUser(
-    @Me() currentUser: User,
-    @Args('id', { type: () => String }) id: string,
-  ): Promise<User> {
-    return await this.usersService.remove(currentUser, id);
-  }
+  // @ResolveField('posts')
+  // posts(@Parent() author: User) {
+  //   return this.prisma.user.findUnique({ where: { id: author.id } }).posts();
+  // }
 }

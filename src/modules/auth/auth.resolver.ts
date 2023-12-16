@@ -1,38 +1,53 @@
-import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql';
+import {
+  Resolver,
+  Mutation,
+  Args,
+  Parent,
+  ResolveField,
+} from '@nestjs/graphql';
 import { AuthService } from './auth.service';
+import { SignupInput } from './dto/signup.input';
+import { RefreshTokenInput } from './dto/refresh-token.input';
 import { Auth } from './entities/auth.entity';
-import { User } from '../users/entities/user.entity';
 import { SigninInput } from './dto/signin.input';
-import { Request } from 'express';
-import { UseGuards } from '@nestjs/common';
-import { LocalAuthGuard } from './local-auth.guard';
+import { Token } from './entities/token.entity';
+import { User } from '../users/entities/user.entity';
 
 @Resolver(() => Auth)
 export class AuthResolver {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly auth: AuthService) {}
 
   @Mutation(() => Auth)
-  async signinLocal(
-    @Args('signinInput') signinInput: SigninInput,
-    @Context('req') req: Request,
-  ): Promise<{ token: string; user: User }> {
-    const { token, user } = await this.authService.signinLocal(signinInput);
-    req.res?.cookie('jwt', token, { httpOnly: true });
-    return { token, user };
+  async signup(@Args('signupInput') signupInput: SignupInput) {
+    signupInput.email = signupInput.email.toLowerCase();
+    const { accessToken, refreshToken } =
+      await this.auth.createUser(signupInput);
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 
-  @Mutation(() => User)
-  async signOut(
-    @Context('req') req: Request,
-    @Context('user') user: User,
-  ): Promise<User> {
-    req.res?.clearCookie('jwt', { httpOnly: true });
-    return user;
+  @Mutation(() => Auth)
+  async signin(@Args('signinInput') { email, password }: SigninInput) {
+    const { accessToken, refreshToken } = await this.auth.signin(
+      email.toLowerCase(),
+      password,
+    );
+
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 
-  @UseGuards(LocalAuthGuard)
-  @Query(() => User)
-  async me(@Context('user') user: User): Promise<User> {
-    return user;
+  @Mutation(() => Token)
+  async refreshToken(@Args() { token }: RefreshTokenInput) {
+    return this.auth.refreshToken(token);
+  }
+
+  @ResolveField('user', () => User)
+  async user(@Parent() auth: Auth) {
+    return await this.auth.getUserFromToken(auth.accessToken);
   }
 }

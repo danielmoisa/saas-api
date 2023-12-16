@@ -25,6 +25,7 @@ import { TasksModule } from './modules/tasks/tasks.module';
       imports: [AuthModule],
       inject: [AuthService],
       useFactory: (authService: AuthService) => ({
+        introspection: true,
         playground: false,
         plugins: [ApolloServerPluginLandingPageLocalDefault()],
         autoSchemaFile: join(process.cwd(), 'src/schema.gql'),

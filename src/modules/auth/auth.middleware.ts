@@ -9,5 +9,5 @@ export const authenticateUserByRequest = (
     request.headers.authorization?.replace('Bearer ', '') ||
     request.cookies.jwt ||
     '';
-  return authService.me(token);
+  return authService.getUserFromToken(token);
 };

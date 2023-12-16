@@ -4,11 +4,11 @@ import { Workspace } from './entities/workspace.entity';
 import { CreateWorkspaceInput } from './dto/create-workspace.input';
 import { UpdateWorkspaceInput } from './dto/update-workspace.input';
 import { UseGuards } from '@nestjs/common';
-import { LocalAuthGuard } from '../auth/local-auth.guard';
 import { User } from '../users/entities/user.entity';
-import { Me } from '../auth/me.decorator';
+import { GqlAuthGuard } from '../auth/gql-auth.guard';
+import { Me } from '../../common/decorators/me.decorator';
 
-@UseGuards(LocalAuthGuard)
+@UseGuards(GqlAuthGuard)
 @Resolver(() => Workspace)
 export class WorkspacesResolver {
   constructor(private readonly workspacesService: WorkspacesService) {}

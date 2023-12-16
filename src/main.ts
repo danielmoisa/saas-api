@@ -5,7 +5,6 @@ import { NestFactory } from '@nestjs/core';
 import helmet from 'helmet';
 import * as requestIp from 'request-ip';
 import cookieParser from 'cookie-parser';
-
 import { ValidationPipe } from '@nestjs/common';
 import { CorsConfig, NestConfig } from './config/configuration.interface';
 
