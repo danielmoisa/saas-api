@@ -33,8 +33,9 @@ type User {
   """Identifies the date and time when the object was last updated."""
   updatedAt: DateTime!
   email: String!
-  firstName: String
-  lastName: String
+  firstName: String!
+  lastName: String!
+  birthDate: String
 }
 
 """
@@ -128,6 +129,8 @@ input UpdateWorkspaceInput {
 input UpdateUserInput {
   firstName: String
   lastName: String
+  email: String
+  birthDate: String
 }
 
 input ChangePasswordInput {

@@ -6,7 +6,7 @@ import {
   Args,
   ResolveField,
 } from '@nestjs/graphql';
-import { UseGuards } from '@nestjs/common';
+import { NotFoundException, UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from '../auth/gql-auth.guard';
 import { UsersService } from './users.service';
 import { ChangePasswordInput } from './dto/change-password.input';
@@ -43,9 +43,15 @@ export class UsersResolver {
     @Me() user: User,
     @Args('data') changePassword: ChangePasswordInput,
   ) {
+    const userPassword = await this.prisma.password.findUnique({
+      where: { userId: user.id },
+    });
+
+    if (!userPassword) throw new NotFoundException('User password not found');
+
     return this.usersService.changePassword(
       user.id,
-      user.password,
+      userPassword?.hash,
       changePassword,
     );
   }
