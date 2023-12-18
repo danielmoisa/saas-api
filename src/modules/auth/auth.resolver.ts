@@ -4,6 +4,7 @@ import {
   Args,
   Parent,
   ResolveField,
+  Context,
 } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
 import { SignupInput } from './dto/signup.input';
@@ -12,6 +13,7 @@ import { Auth } from './entities/auth.entity';
 import { SigninInput } from './dto/signin.input';
 import { Token } from './entities/token.entity';
 import { User } from '../users/entities/user.entity';
+import { Request } from 'express';
 
 @Resolver(() => Auth)
 export class AuthResolver {
@@ -29,11 +31,17 @@ export class AuthResolver {
   }
 
   @Mutation(() => Auth)
-  async signin(@Args('signinInput') { email, password }: SigninInput) {
+  async signin(
+    @Context('req') req: Request,
+    @Args('signinInput') { email, password }: SigninInput,
+  ) {
     const { accessToken, refreshToken } = await this.auth.signin(
       email.toLowerCase(),
       password,
     );
+
+    // Set HTTP-only cookies in the response
+    this.auth.setCookies(req, accessToken, refreshToken);
 
     return {
       accessToken,

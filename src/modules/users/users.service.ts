@@ -43,6 +43,7 @@ export class UsersService {
       data: {
         firstName: updateUserInput.firstName,
         lastName: updateUserInput.lastName,
+        birthDate: updateUserInput.birthDate,
       },
     });
 

@@ -7,7 +7,7 @@ export const authenticateUserByRequest = (
 ) => {
   const token =
     request.headers.authorization?.replace('Bearer ', '') ||
-    request.cookies.jwt ||
+    request.cookies.accessToken ||
     '';
   return authService.getUserFromToken(token);
 };

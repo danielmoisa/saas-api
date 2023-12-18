@@ -13,6 +13,7 @@ import { SignupInput } from './dto/signup.input';
 import { Token } from './entities/token.entity';
 import { SecurityConfig } from '../../config/configuration.interface';
 import { PasswordService } from '../../providers/password/password.service';
+import { Request } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -130,7 +131,9 @@ export class AuthService {
   }
 
   private generateAccessToken(payload: { userId: string }): string {
-    return this.jwtService.sign(payload);
+    return this.jwtService.sign(payload, {
+      secret: this.configService.get('JWT_ACCESS_SECRET'),
+    });
   }
 
   private generateRefreshToken(payload: { userId: string }): string {
@@ -153,5 +156,17 @@ export class AuthService {
     } catch (e) {
       throw new UnauthorizedException();
     }
+  }
+
+  setCookies(req: Request, accessToken: string, refreshToken: string) {
+    // Set cookies in the response object
+    req.res?.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      maxAge: 60 * 60, // 1 Hour
+      sameSite: 'lax',
+      // secure: true, //on HTTPS
+      // domain: 'example.com', //set your domain
+    });
+    // req.res?.cookie('refreshToken', refreshToken, { httpOnly: true });
   }
 }

@@ -13,6 +13,7 @@ import { WorkspacesModule } from './modules/workspaces/workspaces.module';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { PrismaModule } from './providers/prisma/prisma.module';
 import { TasksModule } from './modules/tasks/tasks.module';
+import { JwtStrategy } from './modules/auth/jwt.strategy';
 
 @Module({
   imports: [
@@ -27,6 +28,10 @@ import { TasksModule } from './modules/tasks/tasks.module';
       useFactory: (authService: AuthService) => ({
         introspection: true,
         playground: false,
+        cors: {
+          origin: true,
+          credentials: true,
+        },
         plugins: [ApolloServerPluginLandingPageLocalDefault()],
         autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
         context: async ({ req }: { req: Request }) => {

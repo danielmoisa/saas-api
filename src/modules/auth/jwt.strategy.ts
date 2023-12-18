@@ -13,8 +13,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     readonly configService: ConfigService,
   ) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: 'asdasd',
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        (request) => {
+          console.log(request.cookies['accessToken']);
+          return request.cookies['accessToken'];
+        },
+      ]),
+      secretOrKey: configService.get('JWT_ACCESS_SECRET'),
     });
   }
 

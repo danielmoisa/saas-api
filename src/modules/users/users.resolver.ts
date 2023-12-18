@@ -24,6 +24,7 @@ export class UsersResolver {
   ) {}
 
   @Query(() => User)
+  @UseGuards(GqlAuthGuard)
   async me(@Me() user: User): Promise<User> {
     return user;
   }

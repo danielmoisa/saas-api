@@ -4,7 +4,7 @@ import {
   // registerEnumType,
   Field,
 } from '@nestjs/graphql';
-import { IsEmail } from 'class-validator';
+import { IsDate, IsEmail } from 'class-validator';
 // import { Role } from '@prisma/client';
 import { BaseModel } from '../../../common/models/BaseModel';
 
@@ -26,6 +26,7 @@ export class User extends BaseModel {
   lastName: string;
 
   @Field(() => String, { nullable: true })
+  @IsDate()
   birthDate?: string;
 
   // @Field(() => Role)
