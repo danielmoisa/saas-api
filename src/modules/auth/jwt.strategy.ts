@@ -10,13 +10,16 @@ import { JwtDto } from './dto/jwt.dto';
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     private readonly authService: AuthService,
-    readonly configService: ConfigService,
+    private readonly configService: ConfigService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request) => {
-          console.log(request.cookies['accessToken']);
-          return request.cookies['accessToken'];
+          const accessToken = request?.cookies['accessToken'];
+          if (!accessToken) {
+            return null;
+          }
+          return accessToken;
         },
       ]),
       secretOrKey: configService.get('JWT_ACCESS_SECRET'),
@@ -24,10 +27,16 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: JwtDto): Promise<User> {
+    if (!payload || !payload.userId) {
+      throw new UnauthorizedException();
+    }
+
     const user = await this.authService.validateUser(payload.userId);
+
     if (!user) {
       throw new UnauthorizedException();
     }
+
     return user;
   }
 }

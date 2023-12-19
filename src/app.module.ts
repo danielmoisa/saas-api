@@ -8,12 +8,11 @@ import { UsersModule } from './modules/users/users.module';
 import { AuthService } from './modules/auth/auth.service';
 import { join } from 'path/posix';
 import { authenticateUserByRequest } from './modules/auth/auth.middleware';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { WorkspacesModule } from './modules/workspaces/workspaces.module';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { PrismaModule } from './providers/prisma/prisma.module';
 import { TasksModule } from './modules/tasks/tasks.module';
-import { JwtStrategy } from './modules/auth/jwt.strategy';
 
 @Module({
   imports: [
@@ -27,16 +26,13 @@ import { JwtStrategy } from './modules/auth/jwt.strategy';
       inject: [AuthService],
       useFactory: (authService: AuthService) => ({
         introspection: true,
-        playground: false,
-        cors: {
-          origin: true,
-          credentials: true,
-        },
-        plugins: [ApolloServerPluginLandingPageLocalDefault()],
+        playground: true,
+        cors: false,
+        // plugins: [ApolloServerPluginLandingPageLocalDefault()],
         autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-        context: async ({ req }: { req: Request }) => {
+        context: async ({ req, res }: { req: Request; res: Response }) => {
           const user = await authenticateUserByRequest(authService, req);
-          return { req, user };
+          return { req, res, user };
         },
       }),
     }),

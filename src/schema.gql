@@ -84,9 +84,9 @@ enum TaskLabel {
 }
 
 type Query {
+  me: User!
   workspaces: [Workspace!]!
   workspace(id: Int!): Workspace!
-  me: User!
   tasks(workspaceId: String!): [Task!]!
   task(taskId: Int!): Task!
 }

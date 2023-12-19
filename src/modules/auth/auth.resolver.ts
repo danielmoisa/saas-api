@@ -5,6 +5,7 @@ import {
   Parent,
   ResolveField,
   Context,
+  Query,
 } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
 import { SignupInput } from './dto/signup.input';
@@ -14,10 +15,19 @@ import { SigninInput } from './dto/signin.input';
 import { Token } from './entities/token.entity';
 import { User } from '../users/entities/user.entity';
 import { Request } from 'express';
+import { UseGuards } from '@nestjs/common';
+import { GqlAuthGuard } from './gql-auth.guard';
+import { Me } from '../../common/decorators/me.decorator';
 
 @Resolver(() => Auth)
 export class AuthResolver {
   constructor(private readonly auth: AuthService) {}
+
+  @Query(() => User)
+  @UseGuards(GqlAuthGuard)
+  async me(@Me() user: User) {
+    return user;
+  }
 
   @Mutation(() => Auth)
   async signup(@Args('signupInput') signupInput: SignupInput) {

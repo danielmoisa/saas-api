@@ -99,7 +99,7 @@ export class AuthService {
       const data = this.jwtService.decode(token);
       if (data && data?.userId) {
         const user = await this.prisma.user.findUnique({
-          where: { id: data?.userId },
+          where: { id: data.userId },
         });
 
         return user || null;
@@ -162,8 +162,8 @@ export class AuthService {
     // Set cookies in the response object
     req.res?.cookie('accessToken', accessToken, {
       httpOnly: true,
-      maxAge: 60 * 60, // 1 Hour
-      sameSite: 'lax',
+      maxAge: 60 * 10000,
+      sameSite: 'none',
       // secure: true, //on HTTPS
       // domain: 'example.com', //set your domain
     });
