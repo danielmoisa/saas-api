@@ -86,7 +86,7 @@ enum TaskLabel {
 type Query {
   me: User!
   workspaces: [Workspace!]!
-  workspace(id: Int!): Workspace!
+  workspace(id: String!): Workspace!
   tasks(workspaceId: String!): [Task!]!
   task(taskId: Int!): Task!
 }
@@ -94,6 +94,7 @@ type Query {
 type Mutation {
   signup(signupInput: SignupInput!): Auth!
   signin(signinInput: SigninInput!): Auth!
+  logout: String!
   refreshToken(token: JWT!): Token!
   createWorkspace(createWorkspaceInput: CreateWorkspaceInput!): Workspace!
   updateWorkspace(updateWorkspaceInput: UpdateWorkspaceInput!): Workspace!

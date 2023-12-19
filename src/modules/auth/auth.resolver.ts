@@ -14,7 +14,7 @@ import { Auth } from './entities/auth.entity';
 import { SigninInput } from './dto/signin.input';
 import { Token } from './entities/token.entity';
 import { User } from '../users/entities/user.entity';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from './gql-auth.guard';
 import { Me } from '../../common/decorators/me.decorator';
@@ -57,6 +57,12 @@ export class AuthResolver {
       accessToken,
       refreshToken,
     };
+  }
+
+  @Mutation(() => String)
+  async logout(@Context() { res }: { res: Response }) {
+    this.auth.removeCookies(res);
+    return 'All cookies cleared';
   }
 
   @Mutation(() => Token)

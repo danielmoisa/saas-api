@@ -32,7 +32,7 @@ export class WorkspacesResolver {
   @Query(() => Workspace, { name: 'workspace' })
   async findOne(
     @Me() currentUser: User,
-    @Args('id', { type: () => Int }) id: string,
+    @Args('id', { type: () => String }) id: string,
   ): Promise<Workspace | null> {
     return await this.workspacesService.findOne(currentUser, id);
   }

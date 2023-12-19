@@ -13,7 +13,7 @@ import { SignupInput } from './dto/signup.input';
 import { Token } from './entities/token.entity';
 import { SecurityConfig } from '../../config/configuration.interface';
 import { PasswordService } from '../../providers/password/password.service';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -162,11 +162,22 @@ export class AuthService {
     // Set cookies in the response object
     req.res?.cookie('accessToken', accessToken, {
       httpOnly: true,
-      maxAge: 60 * 10000,
+      maxAge: 60000 * 10000,
       sameSite: 'none',
       // secure: true, //on HTTPS
       // domain: 'example.com', //set your domain
     });
     // req.res?.cookie('refreshToken', refreshToken, { httpOnly: true });
+  }
+
+  removeCookies(res: Response) {
+    // Remove cookies in the response object
+    res.clearCookie('accessToken', {
+      httpOnly: true,
+      sameSite: 'none',
+      // secure: true, //on HTTPS
+      // domain: 'example.com', //set your domain
+    });
+    // res.clearCookie('refreshToken', { httpOnly: true });
   }
 }
