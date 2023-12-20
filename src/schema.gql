@@ -1,0 +1,159 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Token {
+  """JWT access token"""
+  accessToken: JWT!
+
+  """JWT refresh token"""
+  refreshToken: JWT!
+}
+
+"""
+A field whose value is a JSON Web Token (JWT): https://jwt.io/introduction.
+"""
+scalar JWT
+
+type Auth {
+  """JWT access token"""
+  accessToken: JWT!
+
+  """JWT refresh token"""
+  refreshToken: JWT!
+  user: User!
+}
+
+type User {
+  id: ID!
+
+  """Identifies the date and time when the object was created."""
+  createdAt: DateTime!
+
+  """Identifies the date and time when the object was last updated."""
+  updatedAt: DateTime!
+  email: String!
+  firstName: String!
+  lastName: String!
+  birthDate: String
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Workspace {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  userId: String!
+}
+
+type Task {
+  id: ID!
+  title: String!
+  content: String!
+  status: TaskStatus!
+  priority: TaskPriority!
+  label: TaskLabel!
+}
+
+enum TaskStatus {
+  TODO
+  DONE
+  INPROGRESS
+  BACKLOG
+  CANCELED
+  BLOCKED
+  ONHOLD
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum TaskLabel {
+  BUG
+  FEATURE
+  DOCUMENTATION
+}
+
+type Query {
+  me: User!
+  workspaces: [Workspace!]!
+  workspace(id: String!): Workspace!
+  tasks(workspaceId: String!): [Task!]!
+  task(taskId: Int!): Task!
+}
+
+type Mutation {
+  signup(signupInput: SignupInput!): Auth!
+  signin(signinInput: SigninInput!): Auth!
+  logout: String!
+  refreshToken(token: JWT!): Token!
+  createWorkspace(createWorkspaceInput: CreateWorkspaceInput!): Workspace!
+  updateWorkspace(updateWorkspaceInput: UpdateWorkspaceInput!): Workspace!
+  removeWorkspace(id: Int!): Workspace!
+  updateUser(data: UpdateUserInput!): User!
+  changePassword(data: ChangePasswordInput!): User!
+  createTask(createTaskInput: CreateTaskInput!): Task!
+  updateTask(updateTaskInput: UpdateTaskInput!): Task!
+  removeTask(taskId: Int!): Task!
+}
+
+input SignupInput {
+  email: String!
+  password: String!
+  firstName: String!
+  lastName: String!
+}
+
+input SigninInput {
+  email: String!
+  password: String!
+}
+
+input CreateWorkspaceInput {
+  name: String!
+}
+
+input UpdateWorkspaceInput {
+  name: String
+  id: String!
+}
+
+input UpdateUserInput {
+  firstName: String
+  lastName: String
+  email: String
+  birthDate: String
+}
+
+input ChangePasswordInput {
+  oldPassword: String!
+  newPassword: String!
+}
+
+input CreateTaskInput {
+  title: String!
+  content: String!
+  status: TaskStatus!
+  priority: TaskPriority!
+  label: TaskLabel!
+  workspaceId: ID!
+}
+
+input UpdateTaskInput {
+  title: String
+  content: String
+  status: TaskStatus
+  priority: TaskPriority
+  label: TaskLabel
+  workspaceId: ID
+  id: ID!
+}

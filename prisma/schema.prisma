@@ -1,0 +1,183 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String     @id @default(cuid())
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  email            String     @unique
+  firstName        String
+  lastName         String
+  password         Password?
+  image            UserImage?
+  emailVerified    Boolean    @default(false)
+  birthDate        DateTime?  @db.Date
+  registrationDate DateTime   @default(dbgenerated("timezone('UTC'::text, now())")) @db.Timestamp(6)
+
+  // Relationships
+  companies         Company[]
+  persons           Person[]
+  emailChange       EmailChange?
+  emailVerification EmailVerification?
+  passwordReset     PasswordReset?
+  workspaces        Workspace[]
+}
+
+model Password {
+  hash String
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String @unique
+}
+
+model UserImage {
+  id          String  @id @default(cuid())
+  altText     String?
+  contentType String
+  blob        Bytes
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String @unique
+}
+
+model Workspace {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+
+  // Relationships
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+  tasks  Task[]
+  flows  Flow[]
+}
+
+model Company {
+  id            String   @id @default(cuid())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  name          String
+  city          String
+  description   String?
+  employeeRange String
+  linkedin      String
+  twitter       String
+  website       String
+  phone         Int?
+  email         String?
+
+  // Relationships
+  User   User?   @relation(fields: [userId], references: [id])
+  userId String?
+}
+
+model Person {
+  id        String   @id @default(cuid())
+  firstName String
+  lastName  String
+  email     String   @unique
+  phone     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  User   User?   @relation(fields: [userId], references: [id])
+  userId String?
+}
+
+model Task {
+  id        String       @id @default(cuid())
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  title     String
+  content   String?
+  status    TaskStatus
+  priority  TaskPriority
+  label     TaskLabel
+
+  // Relationships
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+}
+
+model Flow {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  column4   Int
+
+  // Relationships
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+}
+
+model EmailChange {
+  token     String   @id @db.Char(21)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  newEmail  String
+
+  // Relationships
+  userId     String   @unique
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  validUntil DateTime @default(dbgenerated("(timezone('utc'::text, now()) + '2 days'::interval)")) @db.Timestamp(6)
+}
+
+model EmailVerification {
+  token     String   @id @db.Char(21)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  userId     String   @unique
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  validUntil DateTime @default(dbgenerated("(timezone('utc'::text, now()) + '2 days'::interval)")) @db.Timestamp(6)
+}
+
+model PasswordReset {
+  token     String   @id @db.Char(21)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  userId     String   @unique
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  validUntil DateTime @default(dbgenerated("(timezone('utc'::text, now()) + '2 days'::interval)")) @db.Timestamp(6)
+}
+
+enum TaskStatus {
+  TODO
+  DONE
+  INPROGRESS
+  BACKLOG
+  CANCELED
+  BLOCKED
+  ONHOLD
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum TaskLabel {
+  BUG
+  FEATURE
+  DOCUMENTATION
+}
